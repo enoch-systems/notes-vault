@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notes Vault</title>
+</head>
+<body>
+
+  <h1>Notes Vault</h1>
+
+  <h2>Create Note</h2>
+
+  <input id="title" placeholder="Title" />
+  <br><br>
+  <textarea id="content" placeholder="Content"></textarea>
+  <br><br>
+
+  <button onclick="createNote()">Save Note</button>
+
+  <hr>
+
+  <h2>Notes</h2>
+  <div id="notes"></div>
+
+  <script>
+    const API = "http://localhost:3000";
+
+    async function loadNotes() {
+      const res = await fetch(`${API}/notes`);
+      const data = await res.json();
+
+      const container = document.getElementById("notes");
+      container.innerHTML = "";
+
+      data.forEach(note => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <h3>${note.title}</h3>
+          <p>${note.content}</p>
+          <hr/>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function createNote() {
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+
+      await fetch(`${API}/notes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ title, content })
+      });
+
+      loadNotes();
+    }
+
+    loadNotes();
+  </script>
+
+</body>
+</html>
